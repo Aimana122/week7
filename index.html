@@ -13,8 +13,36 @@ box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
  </style>
 </head>
 <body>
- <h1>Current Course Grade Calculator</h1>
- <iframe src="https://script.google.com/macros/s/AKfycbw6wOlwJKkqTu_R_62RirVHo8jA6IEFKvGOnOtaq2GdhO2T5jYmZcik3IHmmg_0n6b2/exec"></iframe>
+ <div id="grade-container">
+  <h1>Current Course Grade Calculator</h1>
+  <p id="grade-result">Loading...</p>
+</div>
+
+<script>
+// Замените YOUR_DEPLOYMENT_URL на реальный URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbPYF2XQLI6hZ2xyLufl6O_cCDZp8WvUm-Wa6cvJR4GPa8Qu4n4AxMcrH0Uy3qvNxW/exec';
+
+async function fetchGrade() {
+  try {
+    const response = await fetch(SCRIPT_URL);
+    const data = await response.json();
+    
+    if (data.error) {
+      document.getElementById('grade-result').innerHTML = 
+        `<span style="color:red;">${data.error}</span>`;
+    } else {
+      document.getElementById('grade-result').innerHTML = 
+        `Your current grade is: <strong>${data.grade}%</strong>`;
+    }
+  } catch (error) {
+    document.getElementById('grade-result').innerHTML = 
+      `<span style="color:red;">Error fetching data: ${error.message}</span>`;
+  }
+}
+
+// Загружаем оценку при открытии страницы
+fetchGrade();
+</script>
  <p>Real-time grade calculation powered by Google Apps Script and Sheets.</p>
    <h1>Google Apps Script Notes</h1>
   <p><em>(Week 7 Assignment)</em></p>
