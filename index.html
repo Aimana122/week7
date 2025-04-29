@@ -13,36 +13,53 @@ box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
  </style>
 </head>
 <body>
- <div id="grade-container">
-  <h1>Current Course Grade Calculator</h1>
-  <p id="grade-result">Loading...</p>
-</div>
+ <div class="container">
+    <div class="grade-card">
+      <div class="grade-header">
+        <h2>Current progress</h2>
+        <div class="grade-percent" id="percentage">0%</div>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Points scored</span>
+          <span class="stat-value" id="currentScore">0.00</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Maximum points</span>
+          <span class="stat-value" id="totalPossible">0.00</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<script>
-// Замените YOUR_DEPLOYMENT_URL на реальный URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbPYF2XQLI6hZ2xyLufl6O_cCDZp8WvUm-Wa6cvJR4GPa8Qu4n4AxMcrH0Uy3qvNxW/exec';
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQjBxghRJLsvApydfFfi3LhezaITDu-D9H34YkOPPXUo9qnokCualBn2t51mB5KD3s/exec';
 
-async function fetchGrade() {
-  try {
-    const response = await fetch(SCRIPT_URL);
-    const data = await response.json();
-    
-    if (data.error) {
-      document.getElementById('grade-result').innerHTML = 
-        `<span style="color:red;">${data.error}</span>`;
-    } else {
-      document.getElementById('grade-result').innerHTML = 
-        `Your current grade is: <strong>${data.grade}%</strong>`;
+    async function updateGrades() {
+      try {
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        
+        if(data.error) throw new Error(data.error);
+
+        document.getElementById('percentage').textContent = `${data.grade}%`;
+        document.getElementById('currentScore').textContent = data.totalScore;
+        document.getElementById('totalPossible').textContent = data.totalPossible;
+
+      } catch(error) {
+        document.getElementById('percentage').textContent = '⚠️ Ошибка';
+        document.getElementById('currentScore').textContent = '–';
+        document.getElementById('totalPossible').textContent = '–';
+        console.error('Ошибка:', error);
+      }
     }
-  } catch (error) {
-    document.getElementById('grade-result').innerHTML = 
-      `<span style="color:red;">Error fetching data: ${error.message}</span>`;
-  }
-}
 
-// Загружаем оценку при открытии страницы
-fetchGrade();
-</script>
+    // Первое обновление
+    updateGrades();
+    // Обновление каждые 5 минут
+    setInterval(updateGrades, 300000);
+  </script>
  <p>Real-time grade calculation powered by Google Apps Script and Sheets.</p>
    <h1>Google Apps Script Notes</h1>
   <p><em>(Week 7 Assignment)</em></p>
