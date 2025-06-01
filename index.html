@@ -13,51 +13,59 @@ box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
  </style>
 </head>
 <body>
- <div class="container">
-    <div class="grade-card">
-      <div class="grade-header">
-        <h2>Current progress</h2>
-        <div class="grade-percent" id="percentage">0%</div>
+<div class="grade-container">
+    <h2>Current progress</h2>
+    
+    <div class="grade-percentage" id="percentage">0%</div>
+    
+    <div class="grade-stats">
+      <div class="stat-item">
+        <span class="stat-label">Points scored:</span>
+        <span class="stat-value" id="earnedPoints">0%</span>
       </div>
-      
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-label">Points scored</span>
-          <span class="stat-value" id="currentScore">0.00</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Maximum points</span>
-          <span class="stat-value" id="totalPossible">0.00</span>
-        </div>
+      <div class="stat-item">
+        <span class="stat-label">Maximum points:</span>
+        <span class="stat-value" id="maxPoints">0</span>
       </div>
     </div>
+    
+    <div class="update-time" id="lastUpdated">Обновлено: --</div>
+    <div class="error-message" id="errorMessage"></div>
   </div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQjBxghRJLsvApydfFfi3LhezaITDu-D9H34YkOPPXUo9qnokCualBn2t51mB5KD3s/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFit_GOgem_4g4BSCiHKytcw2d38BUtsZwIZqBrNwhCmN21L8GNyjvjJ9b4D8yy9sS/exec';
 
     async function updateGrades() {
       try {
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
         
-        if(data.error) throw new Error(data.error);
+        if (!data.success) {
+          throw new Error(data.error || 'Неизвестная ошибка');
+        }
 
-        document.getElementById('percentage').textContent = `${data.grade}%`;
-        document.getElementById('currentScore').textContent = data.totalScore;
-        document.getElementById('totalPossible').textContent = data.totalPossible;
-
+        // Обновляем данные на странице
+        document.getElementById('percentage').textContent = `${data.percentage}%`;
+        document.getElementById('earnedPoints').textContent = data.earnedPoints;
+        document.getElementById('maxPoints').textContent = data.maxPoints;
+        document.getElementById('lastUpdated').textContent = `Обновлено: ${data.lastUpdated}`;
+        document.getElementById('errorMessage').textContent = '';
+        
       } catch(error) {
-        document.getElementById('percentage').textContent = '⚠️ Ошибка';
-        document.getElementById('currentScore').textContent = '–';
-        document.getElementById('totalPossible').textContent = '–';
-        console.error('Ошибка:', error);
+        // Показываем ошибку
+        document.getElementById('percentage').textContent = '⚠️';
+        document.getElementById('earnedPoints').textContent = '–';
+        document.getElementById('maxPoints').textContent = '–';
+        document.getElementById('errorMessage').textContent = error.message;
+        console.error('Ошибка при загрузке данных:', error);
       }
     }
 
-    // Первое обновление
+    // Первое обновление при загрузке
     updateGrades();
-    // Обновление каждые 5 минут
+    
+    // Обновляем каждые 5 минут (300000 мс)
     setInterval(updateGrades, 300000);
   </script>
  <p>Real-time grade calculation powered by Google Apps Script and Sheets.</p>
