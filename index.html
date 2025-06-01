@@ -13,61 +13,29 @@ box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
  </style>
 </head>
 <body>
-<div class="grade-container">
-    <h2>Current progress</h2>
-    
-    <div class="grade-percentage" id="percentage">0%</div>
-    
-    <div class="grade-stats">
-      <div class="stat-item">
-        <span class="stat-label">Points scored:</span>
-        <span class="stat-value" id="earnedPoints">0%</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Maximum points:</span>
-        <span class="stat-value" id="maxPoints">0</span>
-      </div>
-    </div>
-    
-    <div class="update-time" id="lastUpdated">Обновлено: --</div>
-    <div class="error-message" id="errorMessage"></div>
-  </div>
+<div id="grade-summary" style="
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: 'Arial', sans-serif;
+  width: fit-content;
+  margin-top: 20px;
+">
+  <h2 style="margin-top: 0;">Прогресс по курсу</h2>
+  <div id="grade-content">Загрузка...</div>
+</div>
 
-  <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFit_GOgem_4g4BSCiHKytcw2d38BUtsZwIZqBrNwhCmN21L8GNyjvjJ9b4D8yy9sS/exec';
-
-    async function updateGrades() {
-      try {
-        const response = await fetch(SCRIPT_URL);
-        const data = await response.json();
-        
-        if (!data.success) {
-          throw new Error(data.error || 'Неизвестная ошибка');
-        }
-
-        // Обновляем данные на странице
-        document.getElementById('percentage').textContent = `${data.percentage}%`;
-        document.getElementById('earnedPoints').textContent = data.earnedPoints;
-        document.getElementById('maxPoints').textContent = data.maxPoints;
-        document.getElementById('lastUpdated').textContent = `Обновлено: ${data.lastUpdated}`;
-        document.getElementById('errorMessage').textContent = '';
-        
-      } catch(error) {
-        // Показываем ошибку
-        document.getElementById('percentage').textContent = '⚠️';
-        document.getElementById('earnedPoints').textContent = '–';
-        document.getElementById('maxPoints').textContent = '–';
-        document.getElementById('errorMessage').textContent = error.message;
-        console.error('Ошибка при загрузке данных:', error);
-      }
-    }
-
-    // Первое обновление при загрузке
-    updateGrades();
-    
-    // Обновляем каждые 5 минут (300000 мс)
-    setInterval(updateGrades, 300000);
-  </script>
+<script>
+  fetch('https://script.google.com/macros/s/AKfycbxArGscd5ZadUumGS0Fk5Wfe-rIbZtkGwWuorpsGpx7HMNb5wgBzFTvAbTC6KU0EZGq/exec')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('grade-content').innerHTML = `
+        <p><strong>Набрано баллов:</strong> ${data.received} из ${data.max}</p>
+        <p><strong>Процент выполнения:</strong> ${data.percent}%</p>
+      `;
+    });
+</script>
  <p>Real-time grade calculation powered by Google Apps Script and Sheets.</p>
    <h1>Google Apps Script Notes</h1>
   <p><em>(Week 7 Assignment)</em></p>
