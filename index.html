@@ -28,13 +28,24 @@ box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
 </div>
 
 <script>
-  fetch('https://script.google.com/macros/s/AKfycbx5RNJr_Ku_k388L2mz5X55xYF8mD1osDaCzOTU69l3zsiREyXiw7Fv4gvdMLSDNk-n/exec')
+  fetch('https://script.google.com/macros/s/AKfycby3AUhVyNkIyEKR08jefxEzkU5LnZuXu6MPmLl94FmbLX4bVifeVbzlzUVs35jlBwSB/exec')
     .then(res => res.json())
     .then(data => {
       document.getElementById('grade-content').innerHTML = `
-        <p><strong>Points Earned:</strong> ${data.received} из ${data.max}</p>
-        <p><strong>Completion:</strong> ${data.percent}%</p>
+        <p><strong>Total Progress:</strong> ${data.received} out of ${data.max}</p>
+        <p><strong>Total Completion:</strong> ${data.percentTotal}%</p>
+
+        <hr style="margin: 20px auto; width: 60%;">
+
+        <p><strong>Current Progress:</strong> ${data.received} out of ${data.currentMax}</p>
+        <p><strong>Progress Based on Current Max:</strong> ${data.percentCurrent}%</p>
+
+        <p style="font-size: 0.9em; color: gray; margin-top: 12px;">As of ${data.date}</p>
       `;
+    })
+    .catch(err => {
+      document.getElementById('grade-content').innerHTML = `<p style="color: red;">Error loading data</p>`;
+      console.error(err);
     });
 </script>
  <p>Real-time grade calculation powered by Google Apps Script and Sheets.</p>
